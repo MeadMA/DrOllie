@@ -278,8 +278,10 @@ def update_action(def_hsh)
 	if def_hsh["success_codes"].include?(exit_code)
 		log_event(4, 'SUCCESS', "Update action for #{def_hsh["description"]} succeeded with exit code #{exit_code}.")
 		File.delete("./update_files/#{def_hsh["file_name"]}")
+		return true
 	else
 		log_event(5, 'WARNING', "Update action for #{def_hsh["description"]} failed with exit code #{exit_code}.")
+		return false
 	end
 end
 
