@@ -294,8 +294,19 @@ def init_update(def_hsh)
 	dest = "./update_files/" + def_hsh["file_name"]
 	# Perform the download
 	download_update(url, dest)
-	# Execute update action
-	update_action(def_hsh)
+	# Execute update action and disable program's auto-update if successful
+	if update_action(def_hsh)
+		disable_auto_update(def_hsh)
+	end
+end
+
+# Disables a program's own auto-update function using the script/program
+# specified in the definition
+def disable_auto_update(def_hsh)
+	if def_hsh["disable_auto_update"]
+		cmd = "\"./disable_auto_update/#{disable_auto_update}\""
+		log_event(10, 'INFORMATION', "Disabled manufacturer's auto-update mechanism for '#{def_hsh['description']}' using '#{cmd}'")
+	end
 end
 
 def get_file_version(filename)
