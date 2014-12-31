@@ -1,6 +1,7 @@
 require 'win32/registry'
 require 'json'
 require 'open-uri'
+require 'Win32API'
 
 # Query the 'uninstall' key from the Registry to get a list of installed
 # software.  Return an array of arrays.  Each member array is the name of the
@@ -80,6 +81,15 @@ def installed_program_outdated?(def_hsh, software)
 				return true
 			end
 		end
+	end
+	return false
+end
+
+def file_version_outdated?(def_hsh)
+	current_ver = get_file_version(def_hsh["check_file"])
+	if version_less_than?(current_ver, def_hsh["min_version"])
+		log_event(7, 'INFORMATION', "#{def_hsh["description"]} is out-of-date.")
+		return true
 	end
 	return false
 end
@@ -284,4 +294,22 @@ def init_update(def_hsh)
 	download_update(url, dest)
 	# Execute update action
 	update_action(def_hsh)
+end
+
+def get_file_version(filename)
+	s=""
+	vsize=Win32API.new('version.dll', 'GetFileVersionInfoSize', ['P', 'P'], 'L').call(filename, s)
+	if (vsize > 0)
+		result = ' '*vsize
+		Win32API.new('version.dll', 'GetFileVersionInfo', ['P', 'L', 'L', 'P'], 'L').call(filename, 0, vsize, result)
+		rstring = result.unpack('v*').map{|s| s.chr if s<256}*''
+		r = /FileVersion..(.*?)\000/.match(rstring)
+		if r
+			return r[1]
+		else
+			return false
+		end
+	else
+		return false
+	end
 end

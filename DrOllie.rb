@@ -39,6 +39,10 @@ defs.each do |d|
 		if registry_version_outdated?(d)
 			init_update(d)
 		end
+	when "file_version"
+		if file_version_outdated?(d)
+			init_update(d)
+		end
 	else
 		log_event(8, 'ERROR', "The update method specified ('#{d["method"]}') in the definition for '#{d["description"]}' is invalid.")
 	end
