@@ -305,6 +305,7 @@ end
 def disable_auto_update(def_hsh)
 	if def_hsh["disable_auto_update"]
 		cmd = "\"./disable_auto_update/#{def_hsh["disable_auto_update"]}\""
+		`#{cmd}`
 		log_event(10, 'INFORMATION', "Disabled manufacturer's auto-update mechanism for '#{def_hsh['description']}' using '#{cmd}'")
 	end
 end
