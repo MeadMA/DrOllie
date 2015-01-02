@@ -8,7 +8,7 @@ end
 
 # Get architecture.  If 64-bit, get 64-bit software and 32-bit software (from
 # WOW6432Node).
-if RUBY_PLATFORM == 'x64-mingw32'
+if Config::CONFIG['host_cpu'] == 'x86_64'
 	software32 = query_uninstall(true)
 	software64 = query_uninstall
 else
