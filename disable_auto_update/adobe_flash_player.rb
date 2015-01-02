@@ -19,12 +19,13 @@ def mod_mms(filename)
 		return true
 	else
 		return false
+	end
 end
 
 # If mms.cfg files exist, modify them to disable automatic updates
 # If the files don't exist, create them and disable automatic updates
 mod_mms(ENV['SystemRoot'].gsub("\\", "/") + "/System32/macromed/flash/mms.cfg")
-if Config::CONFIG['host_cpu'] == 'x86_64'
+if RbConfig::CONFIG['host_cpu'] == 'x86_64'
 	mod_mms(ENV['SystemRoot'].gsub("\\", "/") + "/SysWOW64/macromed/flash/mms.cfg")
 end
 

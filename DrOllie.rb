@@ -8,7 +8,7 @@ end
 
 # Get architecture.  If 64-bit, get 64-bit software and 32-bit software (from
 # WOW6432Node).
-if Config::CONFIG['host_cpu'] == 'x86_64'
+if RbConfig::CONFIG['host_cpu'] == 'x86_64'
 	software32 = query_uninstall(true)
 	software64 = query_uninstall
 else
