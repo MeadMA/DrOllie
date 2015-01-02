@@ -1,0 +1,1 @@
+ruby "%~dp0adobe_flash_player.rb"
