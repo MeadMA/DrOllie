@@ -49,7 +49,7 @@ end
 def read_defs
 	defs = Array.new
 	# Get list of .CONF files from 'def' directory
-	def_files = Dir["./def/*.conf"]
+	def_files = Dir["#{DATA_DIR}/def/*.conf"]
 	# Read each file and add it to the array
 	def_files.each do |file|
 		f = File.read(file)
@@ -255,9 +255,9 @@ def update_action(def_hsh)
 	case def_hsh["action"].downcase
 	when "execute_downloaded_file"
 		if def_hsh["action_parameters"]
-			cmd = "\"./update_files/#{def_hsh["file_name"]}\" #{def_hsh["action_parameters"]}"
+			cmd = "\"#{DATA_DIR}/update_files/#{def_hsh["file_name"]}\" #{def_hsh["action_parameters"]}"
 		else
-			cmd = "\"./update_files/#{def_hsh["file_name"]}\""
+			cmd = "\"#{DATA_DIR}/update_files/#{def_hsh["file_name"]}\""
 		end
 	end
 	
@@ -267,7 +267,7 @@ def update_action(def_hsh)
 	exit_code=$?.exitstatus.to_s
 	
 	# Log output from command; convert line feeds to Windows style (yuck)
-	log_file = "./output/#{def_hsh["action"]}_#{Time.now.strftime("%Y%m%d_%H%M%S")}.log"
+	log_file = "#{DATA_DIR}/output/#{def_hsh["action"]}_#{Time.now.strftime("%Y%m%d_%H%M%S")}.log"
 	output = output.gsub("\r\n", "\n").gsub("\n", "\r\n")
 	File.open(log_file, 'w') do |file|
 		file.puts output
@@ -277,7 +277,7 @@ def update_action(def_hsh)
 	# If succeeded, delete the update file
 	if def_hsh["success_codes"].include?(exit_code)
 		log_event(4, 'SUCCESS', "Update action for #{def_hsh["description"]} succeeded with exit code #{exit_code}.")
-		File.delete("./update_files/#{def_hsh["file_name"]}")
+		File.delete("#{DATA_DIR}/update_files/#{def_hsh["file_name"]}")
 		return true
 	else
 		log_event(5, 'WARNING', "Update action for #{def_hsh["description"]} failed with exit code #{exit_code}.")
@@ -291,7 +291,7 @@ def init_update(def_hsh)
 	url = def_hsh["download_url"]
 	# Download to 'update_files' directory and name the file based on
 	# the definition
-	dest = "./update_files/" + def_hsh["file_name"]
+	dest = "#{DATA_DIR}/update_files/" + def_hsh["file_name"]
 	# Perform the download
 	download_update(url, dest)
 	# Execute update action and disable program's auto-update if successful
@@ -304,7 +304,7 @@ end
 # specified in the definition
 def disable_auto_update(def_hsh)
 	if def_hsh["disable_auto_update"]
-		cmd = "\"./disable_auto_update/#{def_hsh['disable_auto_update']}\""
+		cmd = "\"#{DATA_DIR}/disable_auto_update/#{def_hsh['disable_auto_update']}\""
 		`#{cmd}`
 		log_event(10, 'INFORMATION', "Disabled manufacturer's auto-update mechanism for '#{def_hsh['description']}' using '#{cmd}'")
 	end
@@ -327,3 +327,20 @@ def get_file_version(filename)
 		return false
 	end
 end
+
+# Returns directory for Dr. Ollie data (configuration, definitions, etc.)
+def get_data_dir
+	key = "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Folders"
+	appdata = ""
+	begin
+		Win32::Registry::HKEY_LOCAL_MACHINE.open(key) do |reg|
+			appdata = reg['Common AppData'].gsub("\\", "/")
+		end
+	rescue
+		appdata = ENV['SystemDrive'].gsub("\\", "/") + "/ProgramData"
+	end
+	return "#{appdata}/DrOllie"
+end
+
+# Set global variables
+DATA_DIR=get_data_dir
