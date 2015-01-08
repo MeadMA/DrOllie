@@ -1,0 +1,11 @@
+1, INFORMATION, Downloading <url> to <destination>
+2, INFORMATION, Download of <url> to <destination> cancelled. <dest> already exists.
+3, INFORMATION, Executing update action for <definition_description> (<update_command>)
+4, SUCCESS, Update action for <definition_description> succeeded with exit code <exit_code>.
+5, WARNING, Update action for <definition_description> failed with exit code <exit_code>.
+6, INFORMATION, Running check for <definition_description>
+7, INFORMATION, <definition_description> is out-of-date.
+8, ERROR, The update method specified ('<method>') in the definition for '<definition_description>' is invalid.
+9, ERROR, The registry hive specified ('<registry_hive>' in the definition for '<definition_description>' is invalid.
+10, INFORMATION, Disabled manufacturer's auto-update mechanism for '<definition_description>' using '<disable_command>'
+11, ERROR, Failed to create a required directory: '<directory>'
