@@ -9,9 +9,16 @@ end
 # Perform check for necessary directories
 ensure_dirs
 
-# Get architecture.  If 64-bit, get 64-bit software and 32-bit software (from
-# WOW6432Node).
+# Determine architecture
 if RbConfig::CONFIG['host_cpu'] == 'x86_64'
+	arch = 64
+else
+	arch = 32
+end
+
+# If 64-bit, get 64-bit software and 32-bit software (from WOW6432Node).  If
+# 32-bit, just get 32-bit software.
+if arch == 64
 	software32 = query_uninstall(true)
 	software64 = query_uninstall
 else
@@ -24,6 +31,11 @@ defs = read_defs
 
 # Run through each definition and run the check configured.
 defs.each do |d|
+	# Skip 64-bit checks when running 32-bit
+	if d["arch"] == "64" && arch == 32
+		next
+	end
+	
 	log_event(6, 'INFORMATION', "Running check for #{d["description"]}")
 	# Read architecture defined for this check and grab applicable software for
 	# check.
