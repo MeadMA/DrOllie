@@ -2,6 +2,7 @@ require 'win32/registry'
 require 'json'
 require 'open-uri'
 require 'Win32API'
+require 'fileutils'
 
 # Query the 'uninstall' key from the Registry to get a list of installed
 # software.  Return an array of arrays.  Each member array is the name of the
@@ -340,6 +341,18 @@ def get_data_dir
 		appdata = ENV['SystemDrive'].gsub("\\", "/") + "/ProgramData"
 	end
 	return "#{appdata}/DrOllie"
+end
+
+# Checks if necessary directories exist and creates any that are missing
+def ensure_dirs
+	[ 'def', 'disable_auto_update', 'output', 'update_files' ].each do |dir|
+		dir = DATA_DIR + "/" + dir
+		unless File.exist?(dir)
+			unless FileUtils::mkdir_p dir
+				log_event(10, 'ERROR', "Failed to create a required directory: '#{dir}'")
+			end
+		end
+	end
 end
 
 # Set global variables

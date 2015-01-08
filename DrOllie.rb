@@ -6,6 +6,9 @@ unless is_admin?
 	exit(1)
 end
 
+# Perform check for necessary directories
+ensure_dirs
+
 # Get architecture.  If 64-bit, get 64-bit software and 32-bit software (from
 # WOW6432Node).
 if RbConfig::CONFIG['host_cpu'] == 'x86_64'
