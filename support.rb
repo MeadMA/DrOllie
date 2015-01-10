@@ -351,6 +351,7 @@ def ensure_dirs
 		unless File.exist?(dir)
 			unless FileUtils::mkdir_p dir
 				log_event(10, 'ERROR', "Failed to create a required directory: '#{dir}'")
+				exit(10)
 			end
 		end
 	end
@@ -361,7 +362,7 @@ def read_core_conf
 	filename = DATA_DIR + "/DrOllie.conf"
 	unless File.exist?(filename)
 		log_event(12, 'ERROR', "DrOllie.conf does not exist or could not be read")
-		exit 12
+		exit(12)
 	end
 	file = File.read(filename)
 	return JSON.parse(file)
