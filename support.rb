@@ -3,6 +3,7 @@ require 'json'
 require 'open-uri'
 require 'Win32API'
 require 'fileutils'
+require 'net/http'
 
 # Query the 'uninstall' key from the Registry to get a list of installed
 # software.  Return an array of arrays.  Each member array is the name of the
@@ -368,6 +369,48 @@ def read_core_conf
 	return JSON.parse(file)
 end
 
+# Read the status from status.conf
+def read_status
+	filename = DATA_DIR + "/status.conf"
+	if File.exist?(filename)
+		file = File.read(filename)
+		return JSON.parse(file)
+	else
+		return Hash.new
+	end
+end
+
+# Update status.conf
+def save_status(hsh)
+	File.write("#{DATA_DIR}/status.conf", hsh.to_json)
+end
+
+# Download current definitions from the URL specified in DrOllie.conf
+def download_current_definitions
+	uri = URI(CORE_CONF['definitions_url'])
+	dest = DATA_DIR + "/current_definitions.zip"
+	
+	req = Net::HTTP::Get.new(uri.request_uri)
+	if File.exist?(dest)
+		req['if-modified-since'] = STATUS['def_last-modified']
+		req['etag'] = STATUS['def_etag']
+	end
+	res = Net::HTTP.start(uri.hostname, uri.port) do |http|
+		http.request(req)
+	end
+	open dest, 'w' do |d|
+		d.write res.body
+	end if res.is_a?(Net::HTTPSuccess)
+	
+	if res.code == "200"
+		hsh = res.to_hash
+		STATUS['def_last-modified'] = hsh['last-modified']
+		STATUS['etag'] = hsh['etag']
+		save_status(STATUS)
+	end
+end
+
 # Set global variables
 DATA_DIR=get_data_dir
 CORE_CONF=read_core_conf
+STATUS=read_status
