@@ -2,8 +2,9 @@ load 'support.rb'
 
 # Warn and exit if user is not an administrator or UAC-elevated.
 unless is_admin?
-	print "ERROR: Dr. Ollie must be run with administrative credentials.\nEnsure the user is an administrator and UAC-elevated.\n"
-	exit(1)
+	msg = "ERROR: Dr. Ollie must be run with administrative credentials.\nEnsure the user is an administrator and UAC-elevated.\n"
+	log_event(13, 'ERROR', msg)
+	exit(13)
 end
 
 # Perform check for necessary directories

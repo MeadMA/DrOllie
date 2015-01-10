@@ -177,8 +177,9 @@ end
 # WARNING, or INFORMATION), and description.
 # Also print the event to the command line
 def log_event(id, type, desc)
-	`eventcreate /l APPLICATION /t #{type.upcase} /so DrOllie /id #{id.to_s} /d "#{desc}"`
 	print "#{type}: #{desc}\n"
+	desc = desc.gsub("\n", "  ")
+	`eventcreate /l APPLICATION /t #{type.upcase} /so DrOllie /id #{id.to_s} /d "#{desc}"`
 end
 
 # Reads a given key/value from HKLM
