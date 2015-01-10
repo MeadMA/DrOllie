@@ -28,8 +28,8 @@ def query_uninstall(wow64=false)
 				name = k["DisplayName"]
 			rescue
 			end
-			# Get the DisplayVersion value; use rescue in case the vaue doesn't
-			# exit
+			# Get the DisplayVersion value; use rescue in case the value doesn't
+			# exist
 			begin
 				version = k["DisplayVersion"]
 			rescue
@@ -355,5 +355,17 @@ def ensure_dirs
 	end
 end
 
+# Read the core configuration from DrOllie.conf
+def read_core_conf
+	filename = DATA_DIR + "/DrOllie.conf"
+	unless File.exist?(filename)
+		log_event(12, 'ERROR', "DrOllie.conf does not exist or could not be read")
+		exit 12
+	end
+	file = File.read(filename)
+	return JSON.parse(file)
+end
+
 # Set global variables
 DATA_DIR=get_data_dir
+CORE_CONF=read_core_conf
