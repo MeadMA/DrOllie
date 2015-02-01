@@ -408,6 +408,13 @@ def download_current_definitions
 		STATUS['def_last-modified'] = hsh['last-modified']
 		STATUS['etag'] = hsh['etag']
 		save_status(STATUS)
+		log_event(14, 'INFORMATION', "Newer definitions were downloaded")
+	end
+	
+	if res.code == "200"
+		return true
+	else
+		return false
 	end
 end
 

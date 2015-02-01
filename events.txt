@@ -11,3 +11,4 @@
 11, ERROR, Failed to create a required directory: '<directory>'
 12, ERROR, DrOllie.conf does not exist or could not be read
 13, ERROR, Dr. Ollie must be run with administrative credentials.  Ensure the user is an administrator and UAC-elevated.
+14, INFORMATION, Newer definitions were downloaded

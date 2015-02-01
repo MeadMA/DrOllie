@@ -10,6 +10,11 @@ end
 # Perform check for necessary directories
 ensure_dirs
 
+# Download definitions and install if newer
+if download_current_definitions
+	install_definitions
+end
+
 # Determine architecture
 if RbConfig::CONFIG['host_cpu'] == 'x86_64'
 	arch = 64
