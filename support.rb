@@ -388,21 +388,30 @@ end
 
 # Download current definitions from the URL specified in DrOllie.conf
 def download_current_definitions
+	# Get download URL and set download destination
 	uri = URI(CORE_CONF['definitions_url'])
 	dest = DATA_DIR + "/current_definitions.zip"
 	
+	# Set request headers; Get the if-modified-since and etag headers from the
+	# STATUS file so that definitions are not re-downloaded if the current ZIP
+	# is already present
 	req = Net::HTTP::Get.new(uri.request_uri)
 	if File.exist?(dest)
 		req['if-modified-since'] = STATUS['def_last-modified']
 		req['etag'] = STATUS['def_etag']
 	end
+	# Initiate HTTP request
 	res = Net::HTTP.start(uri.hostname, uri.port) do |http|
 		http.request(req)
 	end
+	# Write HTTP download data until session is complete
 	open dest, 'wb' do |d|
 		d.write res.body
 	end if res.is_a?(Net::HTTPSuccess)
 	
+	# If the .ZIP is new, store the last-modified and etag headers in the
+	# STATUS file to be referenced for the next update attempt; also log that
+	# the definitions were downloaded
 	if res.code == "200"
 		hsh = res.to_hash
 		STATUS['def_last-modified'] = hsh['last-modified']
@@ -411,6 +420,7 @@ def download_current_definitions
 		log_event(14, 'INFORMATION', "Newer definitions were downloaded")
 	end
 	
+	# Return true if definitions are new; false otherwise
 	if res.code == "200"
 		return true
 	else
