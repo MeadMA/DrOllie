@@ -398,7 +398,7 @@ def download_current_definitions
 	res = Net::HTTP.start(uri.hostname, uri.port) do |http|
 		http.request(req)
 	end
-	open dest, 'w' do |d|
+	open dest, 'wb' do |d|
 		d.write res.body
 	end if res.is_a?(Net::HTTPSuccess)
 	
