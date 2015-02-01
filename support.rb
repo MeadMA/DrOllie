@@ -4,6 +4,7 @@ require 'open-uri'
 require 'Win32API'
 require 'fileutils'
 require 'net/http'
+require 'zip'
 
 # Query the 'uninstall' key from the Registry to get a list of installed
 # software.  Return an array of arrays.  Each member array is the name of the
@@ -407,6 +408,23 @@ def download_current_definitions
 		STATUS['def_last-modified'] = hsh['last-modified']
 		STATUS['etag'] = hsh['etag']
 		save_status(STATUS)
+	end
+end
+
+# Updates definitions from current_definitions.zip
+def install_definitions
+	src = DATA_DIR + "/current_definitions.zip"
+	dirs = [ 'def', 'disable_auto_update' ]
+	dirs.each do |d|
+		Dir.glob("#{DATA_DIR}/#{d}/*").each do |file|
+			File.delete(file)
+		end
+	end
+	Zip::File.open(src) do |zip|
+		zip.each do |entry|
+			dest = DATA_DIR + "/" + entry.name
+			entry.extract(dest)
+		end
 	end
 end
 
