@@ -307,7 +307,7 @@ end
 # specified in the definition
 def disable_auto_update(def_hsh)
 	if def_hsh["disable_auto_update"]
-		cmd = "\"#{DATA_DIR}/disable_auto_update/#{def_hsh['disable_auto_update']}\""
+		cmd = "\"#{DATA_DIR}/def/disable_auto_update/#{def_hsh['disable_auto_update']}\""
 		`#{cmd}`
 		log_event(10, 'INFORMATION', "Disabled manufacturer's auto-update mechanism for '#{def_hsh['description']}' using '#{cmd}'")
 	end
@@ -347,7 +347,7 @@ end
 
 # Checks if necessary directories exist and creates any that are missing
 def ensure_dirs
-	[ 'def', 'disable_auto_update', 'output', 'update_files' ].each do |dir|
+	[ 'def', 'output', 'update_files' ].each do |dir|
 		dir = DATA_DIR + "/" + dir
 		unless File.exist?(dir)
 			unless FileUtils::mkdir_p dir
