@@ -385,13 +385,13 @@ def save_status(hsh)
 	File.write("#{DATA_DIR}/status.conf", hsh.to_json)
 end
 
-# Updates definition using Git
-def update_definitions_git
+# Updates definitions using SVN
+def update_definitions_svn
 	defs_dir = DATA_DIR + "/def"
-	if File.exist?("#{defs_dir}/.git")
-		`git -C "#{defs_dir}" pull`
+	if File.exist?("#{defs_dir}/.svn")
+		`svn update "#{defs_dir}"`
 	else
-		`git clone #{CORE_CONF['definitions_url']} "#{defs_dir}"`
+		`svn checkout #{CORE_CONF['definitions_url']} "#{defs_dir}"`
 	end
 end
 
