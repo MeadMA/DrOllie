@@ -30,7 +30,7 @@ else
 	software64 = []
 end
 
-# Read in definitions from .CONF files in 'defs' directory.
+# Read in definitions from .CONF files in 'def' directory.
 defs = read_defs
 
 # Run through each definition and run the check configured.
