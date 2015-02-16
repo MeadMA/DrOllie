@@ -4,7 +4,6 @@ require 'open-uri'
 require 'Win32API'
 require 'fileutils'
 require 'net/http'
-require 'zip'
 
 # Query the 'uninstall' key from the Registry to get a list of installed
 # software.  Return an array of arrays.  Each member array is the name of the
@@ -386,62 +385,13 @@ def save_status(hsh)
 	File.write("#{DATA_DIR}/status.conf", hsh.to_json)
 end
 
-# Download current definitions from the URL specified in DrOllie.conf
-def download_current_definitions
-	# Get download URL and set download destination
-	uri = URI(CORE_CONF['definitions_url'])
-	dest = DATA_DIR + "/current_definitions.zip"
-	
-	# Set request headers; Get the if-modified-since and etag headers from the
-	# STATUS file so that definitions are not re-downloaded if the current ZIP
-	# is already present
-	req = Net::HTTP::Get.new(uri.request_uri)
-	if File.exist?(dest)
-		req['if-modified-since'] = STATUS['def_last-modified']
-		req['etag'] = STATUS['def_etag']
-	end
-	# Initiate HTTP request
-	res = Net::HTTP.start(uri.hostname, uri.port) do |http|
-		http.request(req)
-	end
-	# Write HTTP download data until session is complete
-	open dest, 'wb' do |d|
-		d.write res.body
-	end if res.is_a?(Net::HTTPSuccess)
-	
-	# If the .ZIP is new, store the last-modified and etag headers in the
-	# STATUS file to be referenced for the next update attempt; also log that
-	# the definitions were downloaded
-	if res.code == "200"
-		hsh = res.to_hash
-		STATUS['def_last-modified'] = hsh['last-modified']
-		STATUS['etag'] = hsh['etag']
-		save_status(STATUS)
-		log_event(14, 'INFORMATION', "Newer definitions were downloaded")
-	end
-	
-	# Return true if definitions are new; false otherwise
-	if res.code == "200"
-		return true
+# Updates definition using Git
+def update_definitions_git
+	defs_dir = DATA_DIR + "/def"
+	if File.exist?("#{defs_dir}/.git")
+		`git -C "#{defs_dir}" pull`
 	else
-		return false
-	end
-end
-
-# Updates definitions from current_definitions.zip
-def install_definitions
-	src = DATA_DIR + "/current_definitions.zip"
-	dirs = [ 'def', 'disable_auto_update' ]
-	dirs.each do |d|
-		Dir.glob("#{DATA_DIR}/#{d}/*").each do |file|
-			File.delete(file)
-		end
-	end
-	Zip::File.open(src) do |zip|
-		zip.each do |entry|
-			dest = DATA_DIR + "/" + entry.name
-			entry.extract(dest)
-		end
+		`git clone #{CORE_CONF['definitions_url']} "#{defs_dir}"`
 	end
 end
 

@@ -11,9 +11,7 @@ end
 ensure_dirs
 
 # Download definitions and install if newer
-if download_current_definitions
-	install_definitions
-end
+update_definitions_git
 
 # Determine architecture
 if RbConfig::CONFIG['host_cpu'] == 'x86_64'
