@@ -51,7 +51,7 @@ end
 def read_defs
 	defs = Array.new
 	# Get list of .CONF files from 'def' directory
-	def_files = Dir["#{DATA_DIR}/def/*.conf"]
+	def_files = Dir["#{DATA_DIR}/sync/def/*.conf"]
 	# Read each file and add it to the array
 	def_files.each do |file|
 		f = File.read(file)
@@ -307,7 +307,7 @@ end
 # specified in the definition
 def disable_auto_update(def_hsh)
 	if def_hsh["disable_auto_update"]
-		cmd = "\"#{DATA_DIR}/def/disable_auto_update/#{def_hsh['disable_auto_update']}\""
+		cmd = "\"#{DATA_DIR}/sync/disable_auto_update/#{def_hsh['disable_auto_update']}\""
 		`#{cmd}`
 		log_event(10, 'INFORMATION', "Disabled manufacturer's auto-update mechanism for '#{def_hsh['description']}' using '#{cmd}'")
 	end
@@ -387,11 +387,11 @@ end
 
 # Updates definitions using SVN
 def update_definitions_svn
-	defs_dir = DATA_DIR + "/def"
-	if File.exist?("#{defs_dir}/.svn")
-		`svn update "#{defs_dir}"`
+	sync_dir = DATA_DIR + "/sync"
+	if File.exist?("#{sync_dir}/.svn")
+		`svn update "#{sync_dir}"`
 	else
-		`svn checkout #{CORE_CONF['definitions_url']} "#{defs_dir}"`
+		`svn checkout #{CORE_CONF['definitions_url']} "#{sync_dir}"`
 	end
 end
 
