@@ -347,7 +347,7 @@ end
 
 # Checks if necessary directories exist and creates any that are missing
 def ensure_dirs
-	[ 'def', 'output', 'update_files' ].each do |dir|
+	[ 'output', 'update_files' ].each do |dir|
 		dir = DATA_DIR + "/" + dir
 		unless File.exist?(dir)
 			unless FileUtils::mkdir_p dir
